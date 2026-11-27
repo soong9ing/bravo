@@ -1,0 +1,227 @@
+/* ───────── BraVo · 프롤로그 비행 애니메이션 (이미지 버전) ───────── */
+.fp-screen {
+  /* 배경 그림 높이: 화면 높이에 꽉 차게. (아주 넓은 화면에서는 가로도 꽉 차도록 더 크게) */
+  --bg-h: max(100dvh, 50vw);
+  /* 비행기 너비: 화면의 약 80% (큰 화면에서는 너무 커지지 않게) */
+  --plane-w: min(80vw, 720px);
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #0d1235;
+  font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: #fff;
+}
+.fp-screen *, .fp-screen *::before, .fp-screen *::after { box-sizing: border-box; }
+.fp-screen img { user-select: none; -webkit-user-drag: none; }
+
+/* ── 화면 전체 배경 (비행 장면에서 창 바깥에 보이는 색) ── */
+.fp-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+/* 밤 남색 (창 안 왼쪽 밤하늘과 어울리게) */
+.fp-bg--cruise-night { background: linear-gradient(180deg, #0d1235 0%, #1f2563 60%, #343a85 100%); }
+/* 새벽 분홍 (창 안 오른쪽 일출과 어울리게) */
+.fp-bg--cruise-dawn { background: linear-gradient(180deg, #3a3577 0%, #a66a9f 55%, #e59a8c 100%); }
+.fp-screen[data-scene='cruise'] .fp-bg--cruise-night { opacity: 1; }
+/* 비행 장면이 시작되고 1.2초 뒤부터 2.6초 동안 서서히 분홍빛으로 */
+.fp-screen[data-scene='cruise'] .fp-bg--cruise-dawn { opacity: 1; transition: opacity 2.6s ease 1.2s; }
+/* 착륙 중에도 뒤에는 분홍빛을 남겨 둬요 (크로스페이드 때 자연스럽게) */
+.fp-screen[data-scene='landing'] .fp-bg--cruise-dawn { opacity: 1; }
+
+/* ── 장면 한 장 (전체 화면). 바뀔 때 0.8초 동안 겹치며 크로스페이드 ── */
+.fp-stage { position: absolute; inset: 0; overflow: hidden; animation: fp-fade-in 0.8s ease both; }
+.fp-stage.is-leaving { animation: fp-fade-out 0.8s ease both; }
+@keyframes fp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fp-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* 건너뛰기 버튼 */
+.fp-skip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(11, 29, 58, 0.25);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.fp-skip:hover { background: rgba(11, 29, 58, 0.4); }
+
+/* ── 문구: 화면 아래쪽, 어두운 그라데이션 위에 ── */
+.fp-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32%;
+  background: linear-gradient(to top, rgba(5, 10, 25, 0.6) 0%, rgba(5, 10, 25, 0.3) 45%, transparent 100%);
+  pointer-events: none;
+}
+.fp-caption {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(7dvh + env(safe-area-inset-bottom));
+  margin: 0;
+  text-align: center;
+  animation: fp-caption-in 0.7s ease 0.3s both;
+}
+.fp-caption-title {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(5, 10, 25, 0.5);
+}
+.fp-caption-sub { display: block; margin-top: 6px; font-size: 12px; letter-spacing: 0.2em; opacity: 0.85; }
+@keyframes fp-caption-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ═════════ 밖에서 본 장면 공통 (이륙·착륙) ═════════ */
+/* 배경 그림: 화면 높이에 꽉 차게, 왼쪽 끝에서 시작 */
+.fp-bgimg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: var(--bg-h);
+  width: auto;
+  max-width: none;
+  display: block;
+}
+
+/* 비행기: 가로 가운데. 바퀴(그림 맨 아래)를 중심으로 기수가 들려요 */
+.fp-plane {
+  position: absolute;
+  left: 50%;
+  width: var(--plane-w);
+  height: auto;
+  margin-left: calc(var(--plane-w) / -2);
+  transform-origin: 46% 100%; /* 뒷바퀴 위치 */
+  display: block;
+}
+
+/* ═════════ ① 이륙 ═════════ */
+/* 남는 가로 부분이 왼쪽으로 흘러가요 (카메라가 비행기를 따라가는 느낌) */
+.fp-bgimg--takeoff { animation: fp-takeoff-pan 3.5s cubic-bezier(0.45, 0, 0.6, 1) both; }
+@keyframes fp-takeoff-pan {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw - 100%)); } /* 그림 오른쪽 끝이 화면 오른쪽에 닿을 때까지 */
+}
+
+/* 바퀴가 활주로 가운데 점선(그림 높이의 77%)에 오도록 */
+.fp-plane--takeoff {
+  bottom: calc(var(--bg-h) * 0.23);
+  animation: fp-takeoff 3.3s both;
+}
+/* 왼쪽에서 달려와 → 중간쯤 기수를 들고 → 오른쪽 위 화면 밖으로 */
+@keyframes fp-takeoff {
+  0% { transform: translate(-100%, 0) rotate(0); animation-timing-function: ease-in; }
+  45% { transform: translate(-6%, 0) rotate(0); animation-timing-function: ease-in-out; }
+  60% { transform: translate(6%, -8%) rotate(-12deg); animation-timing-function: ease-in; }
+  100% { transform: translate(130%, -260%) rotate(-14deg); }
+}
+
+/* ═════════ ② 비행 (창문) ═════════ */
+.fp-stage--cruise {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 14dvh; /* 아래 문구 자리를 비워 둬요 */
+}
+
+.fp-window {
+  position: relative;
+  /* 너비: 화면의 78%, 최대 360px, 그리고 높이가 화면의 60%를 넘지 않는 만큼 */
+  width: min(78vw, 360px, calc(60dvh * 5 / 8));
+  aspect-ratio: 5 / 8; /* 세로로 긴 모양 */
+  border: 6px solid #fff;
+  border-radius: 42% / 27%;
+  overflow: hidden;
+  isolation: isolate;
+  background: #1f2563;
+  box-shadow: 0 10px 24px rgba(5, 15, 35, 0.25);
+}
+/* 이중 창: 흰 틀 안쪽의 얇은 회색 선 + 유리 반사광 */
+.fp-window::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  z-index: 4;
+  border: 1px solid rgba(210, 216, 225, 0.85);
+  border-radius: 42% / 27%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, transparent 35%);
+  pointer-events: none;
+}
+/* 안쪽 그림자 */
+.fp-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: inset 0 0 28px 6px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* 창 안 하늘 그림: 창 높이에 꽉 차게, 왼쪽(밤) → 오른쪽(일출)으로 천천히 */
+.fp-flightimg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  animation: fp-flight-pan 4s ease-in-out both;
+}
+@keyframes fp-flight-pan {
+  from { transform: translateX(0); }
+  to { transform: translateX(-68%); } /* 그림 오른쪽 끝(해)이 창 안에 들어올 때까지 */
+}
+
+/* ═════════ ③ 착륙 ═════════ */
+/* 배경도 비행기 속도에 맞춰: 내려오는 동안 일정하게 흐르다, 바퀴가 닿은 뒤 점점 느려져 멈춰요 */
+.fp-bgimg--landing {
+  transform: translateX(max(-72%, 100vw - 100%)); /* 멈춘 뒤의 위치 (도시·케이블카 쪽) */
+  animation: fp-landing-pan 3.6s both;
+}
+@keyframes fp-landing-pan {
+  0% { transform: translateX(0); animation-timing-function: linear; }
+  58% { transform: translateX(max(-52%, 100vw - 100%)); animation-timing-function: cubic-bezier(0.15, 0.7, 0.3, 1); }
+  100% { transform: translateX(max(-72%, 100vw - 100%)); }
+}
+
+/* 바퀴가 활주로 가운데 점선(그림 높이의 79.6%)에 닿도록 */
+.fp-plane--landing {
+  bottom: calc(var(--bg-h) * 0.204);
+  animation: fp-landing 3.6s both;
+}
+/* 왼쪽 위에서 기수를 든 채 내려와 → 닿는 순간 살짝 튕기고 → 수평이 된 뒤 → 속도를 줄이며 가운데에 멈춤 */
+@keyframes fp-landing {
+  0% { transform: translate(-110%, -230%) rotate(-4deg); animation-timing-function: linear; }
+  58% { transform: translate(-20%, 0) rotate(-5deg); animation-timing-function: ease-out; }
+  64% { transform: translate(-14%, -10%) rotate(-3deg); animation-timing-function: ease-in; }
+  72% { transform: translate(-9%, 0) rotate(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+
+/* ── "동작 줄이기" 설정이 켜져 있으면: 움직임 없이 장면만 바뀌어요 ── */
+@media (prefers-reduced-motion: reduce) {
+  .fp-screen *,
+  .fp-screen *::before,
+  .fp-screen *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* 겹치는 장면 없이 바로 바뀌게 */
+  .fp-stage.is-leaving { display: none; }
+  /* 비행 장면: 창 안에 밤과 일출 사이 가운데 부분을 보여줘요 */
+  .fp-flightimg { transform: translateX(-34%); }
+}
