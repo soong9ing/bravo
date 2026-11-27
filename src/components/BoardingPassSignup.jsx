@@ -74,6 +74,8 @@ export default function BoardingPassSignup({ onComplete, onLogin }) {
       options: {
         // 닉네임은 DB 트리거가 profiles 테이블로 옮겨요 (supabase/profiles.sql 참고)
         data: { nickname: form.nickname.trim() },
+        // 인증 메일 링크를 누르면 가입했던 주소(로컬 또는 배포 주소)로 돌아와요
+        emailRedirectTo: window.location.origin,
       },
     });
 
