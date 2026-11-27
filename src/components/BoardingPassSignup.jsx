@@ -222,10 +222,13 @@ export default function BoardingPassSignup({ onComplete, onLogin }) {
               탑승하기 ✈
             </button>
           ) : (
-            <p className="bp-confirm">
-              <strong>{form.email}</strong>로 인증 메일을 보냈어요.
-              <br />메일의 링크를 누르면 탑승이 시작돼요!
-            </p>
+            <>
+              <p className="bp-confirm">
+                <strong>{form.email}</strong>로 인증 메일을 보냈어요.
+                <br />메일의 링크를 누르면 탑승이 시작돼요!
+              </p>
+              <p className="bp-hint">메일이 안 보이면 스팸함도 확인해 주세요.</p>
+            </>
           )}
 
           {status === 'idle' && (

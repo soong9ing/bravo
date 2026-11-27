@@ -191,7 +191,10 @@ export default function BoardingPassLogin({ onSignup }) {
           {/* 이메일 인증이 안 된 경우에만: 인증 메일 다시 보내기 */}
           {needsConfirm && (
             resendStatus === 'sent' ? (
-              <p className="bp-confirm" style={{ marginBottom: 12 }}>인증 메일을 다시 보냈어요!</p>
+              <div style={{ marginBottom: 12 }}>
+                <p className="bp-confirm">인증 메일을 다시 보냈어요!</p>
+                <p className="bp-hint">메일이 안 보이면 스팸함도 확인해 주세요.</p>
+              </div>
             ) : (
               <>
                 <button
