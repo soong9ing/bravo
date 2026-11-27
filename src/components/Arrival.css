@@ -54,6 +54,16 @@
   color: #0b1d3a;
 }
 .arr-sub { margin: 0; font-size: 15px; color: #3d4a63; }
+.arr-done {
+  display: inline-block;
+  margin: 18px 0 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #e2f5e9;
+  color: #1d7a45;
+  font-size: 13px;
+  font-weight: 800;
+}
 
 .arr-button {
   margin-top: 32px;

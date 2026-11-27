@@ -1,0 +1,239 @@
+/* ───────── BraVo · 입국 심사 2부: 오늘의 코칭 · 재도전 · 오늘의 성취 ───────── */
+.rv-screen {
+  --navy: #0b1d3a;
+  --orange: #e8553d;
+  --muted: #6b7486;
+  --line: #e3e7ee;
+  --green: #22a35a;
+  position: relative;
+  min-height: 100dvh;
+  padding: 44px 16px 36px;
+  background: linear-gradient(180deg, #eaf2fb 0%, #f6f8fb 40%);
+  font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: var(--navy);
+  box-sizing: border-box;
+}
+.rv-screen * { box-sizing: border-box; }
+.rv-screen p, .rv-screen blockquote { margin: 0; }
+.rv-screen button:disabled { opacity: 0.4; cursor: default; }
+.rv-inner { max-width: 480px; margin: 0 auto; }
+
+.rv-exit {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rv-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: var(--muted); }
+.rv-title { margin: 6px 0 4px; font-size: 26px; font-weight: 800; }
+.rv-lead { margin-bottom: 18px !important; font-size: 14.5px; color: #3d4a63; }
+
+/* 카드 */
+.rv-card {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(11, 29, 58, 0.06);
+  animation: rv-in 0.35s ease both;
+}
+.rv-card-label { margin-bottom: 8px !important; font-size: 13px; font-weight: 800; }
+.rv-card-text { font-size: 14.5px; line-height: 1.6; color: #2c3850; }
+@keyframes rv-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.rv-card--praise { background: #f1faf4; box-shadow: inset 0 0 0 1px #cdebd8; }
+.rv-quote {
+  margin-bottom: 8px !important;
+  padding: 10px 14px;
+  border-left: 3px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* 내가 한 말 ↔ 더 자연스러운 표현 (나란히) */
+.rv-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+@media (max-width: 380px) { .rv-compare { grid-template-columns: 1fr; } }
+.rv-compare-col { padding: 10px 12px; border-radius: 12px; background: #f4f5f8; }
+.rv-compare-col--model { background: #eaf3fd; }
+.rv-compare-label { margin-bottom: 4px !important; font-size: 11px; font-weight: 800; color: var(--muted); }
+.rv-compare-col--model .rv-compare-label { color: #3b6aa3; }
+.rv-said { font-size: 14.5px; line-height: 1.45; color: #8a93a3; } /* 회색 */
+.rv-said--mine { margin-top: 6px !important; text-align: center; }
+
+.rv-model-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rv-model { font-size: 15px; font-weight: 700; line-height: 1.45; }
+.rv-model-row--big {
+  padding: 12px 12px 12px 16px;
+  border-radius: 12px;
+  background: #f4f7fb;
+}
+.rv-model-row--big .rv-model { font-size: 17px; }
+.rv-round {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(11, 29, 58, 0.12);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* 재도전 */
+.rv-retry { text-align: center; }
+.rv-retry .rv-card-label { text-align: left; }
+.rv-retry.is-success { box-shadow: inset 0 0 0 2px var(--green), 0 4px 16px rgba(11, 29, 58, 0.06); }
+.rv-live { min-height: 22px; margin: 12px 0 10px !important; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.rv-live.is-listening { color: #9aa1ad; font-size: 15px; }
+.rv-mic {
+  width: 68px;
+  height: 68px;
+  border: none;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(11, 29, 58, 0.3);
+}
+.rv-mic:active { transform: scale(0.95); }
+.rv-mic.is-listening { background: var(--orange); font-size: 20px; animation: rv-pulse 1.2s ease-in-out infinite; }
+@keyframes rv-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 85, 61, 0.45); }
+  50% { box-shadow: 0 0 0 12px rgba(232, 85, 61, 0); }
+}
+.rv-success { margin-top: 14px !important; font-size: 16px; font-weight: 800; color: #1d7a45; }
+.rv-later {
+  display: block;
+  margin: 12px auto 0;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.rv-voice-help { margin-bottom: 8px !important; padding: 8px 12px; border-radius: 10px; background: #fff4e5; color: #8a5a14; font-size: 12.5px; line-height: 1.5; }
+.rv-form { display: flex; gap: 8px; }
+.rv-input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #f7f8fb;
+  color: var(--navy);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+}
+.rv-input:focus { border-color: var(--navy); background: #fff; }
+.rv-send { padding: 0 18px; border: none; border-radius: 999px; background: var(--navy); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+/* 버튼 */
+.rv-primary {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: var(--orange);
+  color: #fff;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(232, 85, 61, 0.25);
+}
+.rv-primary:active { transform: scale(0.98); }
+.rv-text-btn {
+  display: block;
+  margin: 10px auto 0;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rv-rate { display: flex; width: max-content; margin: 18px auto 0; padding: 2px; border-radius: 999px; background: #e7ebf2; }
+.rv-rate button { padding: 3px 10px; border: none; border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.rv-rate button.is-on { background: #fff; color: var(--navy); }
+
+/* ── 오늘의 성취 ── */
+.rv-passport {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 6px;
+  padding: 22px 0;
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(135deg, rgba(11, 29, 58, 0.025) 0 8px, transparent 8px 16px),
+    #fbf7ee;
+  box-shadow: inset 0 0 0 1px #eadfc8;
+}
+.rv-stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 22px;
+  border: 3px double #2f5aa8;
+  border-radius: 14px;
+  color: #2f5aa8;
+  transform: rotate(-6deg);
+  animation: rv-stamp 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) 0.2s both;
+}
+.rv-stamp-place { font-size: 26px; font-weight: 900; letter-spacing: 0.12em; line-height: 1; }
+.rv-stamp-line { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; }
+.rv-stamp-date { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; opacity: 0.8; }
+@keyframes rv-stamp {
+  0% { opacity: 0; transform: rotate(-6deg) scale(1.8); }
+  70% { opacity: 1; transform: rotate(-6deg) scale(0.95); }
+  100% { opacity: 1; transform: rotate(-6deg) scale(1); }
+}
+
+.rv-missions { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.rv-missions li { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--muted); }
+.rv-missions li.is-done { color: var(--navy); font-weight: 600; }
+.rv-check {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e7ebf2;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.rv-missions li.is-done .rv-check { background: var(--green); }
+
+.rv-expressions { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.rv-expressions li { padding: 8px 8px 8px 12px; border-radius: 10px; background: #f4f7fb; }
+
+.rv-records { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; }
+.rv-record-value { font-size: 28px; font-weight: 900; color: #1f4275; }
+.rv-record-label { margin-top: 2px !important; font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-card, .rv-stamp, .rv-mic { animation: none !important; }
+}

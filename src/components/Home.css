@@ -1,0 +1,340 @@
+/* ───────── BraVo · HOME (나의 여권) ───────── */
+.hm-root {
+  /* 앱 전체와 같은 색: 남색 + 주황빛 빨강 + 하늘 */
+  --navy: #0b1d3a;     /* 큰 숫자·윗부분·끝낸 에피소드 */
+  --navy-2: #1f4275;
+  --red: #e8553d;      /* EPISODE 글자·핀·시작하기 */
+  --salmon: #f3a493;   /* 아직 안 한 에피소드 번호 */
+  --gray: #7a8290;
+  --line: #e3e8f0;
+  --wall: #e9f0f9;
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #0b1d3a 0%, #1f4275 70%, #3a5a8c 100%); /* 가입·준비 화면과 같은 밤하늘 남색 */
+  font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: #1f2a44;
+}
+.hm-root * { box-sizing: border-box; }
+.hm-root p, .hm-root h2, .hm-root ol { margin: 0; }
+
+/* ── 맨 위 고정 바 (투명, 달력을 가리지 않게) ── */
+.hm-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  pointer-events: none;
+}
+.hm-bar > * { pointer-events: auto; }
+.hm-bar-name { font-size: 13px; font-weight: 800; color: #fff; }
+.hm-bar-logout {
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+/* ── 달력 7장: 세로로 한 장씩 딱 맞게 ── */
+.hm-pages {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.hm-pages::-webkit-scrollbar { display: none; }
+.hm-page {
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always; /* 빠르게 넘겨도 한 장씩 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+/* ── 오른쪽 가운데 점 7개 ── */
+.hm-dots {
+  position: fixed;
+  top: 50%;
+  right: 8px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateY(-50%);
+}
+.hm-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.hm-dot::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  opacity: 0.45;
+  transition: background 0.2s, opacity 0.2s;
+}
+.hm-dot.is-active::after { background: #fff; opacity: 1; }
+
+/* ═════════ 여권 한 면 ═════════ */
+.hm-pass {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(88vw, 400px);
+  height: min(calc(100dvh - 90px), 680px); /* 모든 면이 같은 크기 */
+  padding: clamp(14px, 2.4dvh, 22px) clamp(16px, 5vw, 24px) clamp(12px, 2dvh, 18px);
+  border-radius: 16px;
+  background-color: #fff;
+  /* 여권 종이의 아주 옅은 무늬 */
+  background-image:
+    repeating-radial-gradient(circle at 80% 18%, rgba(31, 66, 117, 0.045) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(135deg, rgba(31, 66, 117, 0.025) 0 1px, transparent 1px 7px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  transform: translateY(14px) scale(0.98);
+  opacity: 0.8;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.hm-pass.is-active { transform: none; opacity: 1; }
+/* 왼쪽 제본선 */
+.hm-pass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  background: linear-gradient(90deg, rgba(11, 29, 58, 0.12), rgba(11, 29, 58, 0));
+}
+
+/* 머리: BraVo PASSPORT · P. 01 */
+.hm-pass-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--navy-2);
+}
+.hm-pass-page { letter-spacing: 0.1em; color: var(--gray); }
+
+/* 날짜: DAY 01 + 첫째 날 · 제목 */
+.hm-pass-day {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: clamp(10px, 2dvh, 18px) 0 clamp(8px, 1.6dvh, 14px);
+}
+.hm-sheet .hm-pass-daynum,
+.hm-pass .hm-pass-daynum {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: clamp(66px, 10dvh, 80px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  background: var(--navy);
+  color: #fff;
+  font-size: clamp(28px, 4.4dvh, 36px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hm-pass-daynum small { font-size: 10px; font-weight: 800; letter-spacing: 0.22em; opacity: 0.75; margin-bottom: 3px; }
+.hm-pass-daytext { min-width: 0; }
+.hm-pass .hm-pass-dayword { font-size: 13px; font-weight: 800; color: var(--red); }
+.hm-pass .hm-pass-title {
+  margin: 3px 0 0;
+  font-size: clamp(14px, 2dvh, 16px);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--navy);
+  word-break: keep-all;
+}
+
+/* VISAS · STAMPS */
+.hm-pass .hm-pass-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--gray);
+}
+.hm-pass-lock { letter-spacing: 0; font-size: 12px; color: var(--navy-2); }
+
+/* 도장 칸 (2열) */
+.hm-slots {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.hm-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 0;
+  padding: 8px;
+  border: 1.5px dashed #cfd8e6;
+  border-radius: 14px;
+  text-align: center;
+}
+.hm-slot-num { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--salmon); }
+.hm-slot-title { font-size: clamp(14px, 2.1dvh, 16px); font-weight: 800; color: #9aa1ad; word-break: keep-all; }
+.hm-slot-soon { font-size: 11.5px; font-weight: 700; color: #b0b6c1; }
+
+/* 지금 할 칸: 진행 중 = 남색, 다음 차례 = 주황 */
+.hm-slot.is-progress,
+.hm-slot.is-next { border-style: solid; background: #f5f8fd; }
+.hm-slot.is-progress { border-color: var(--navy-2); }
+.hm-slot.is-next { border-color: var(--red); background: #fff6f3; }
+.hm-slot.is-progress .hm-slot-num { color: var(--navy-2); }
+.hm-slot.is-next .hm-slot-num { color: var(--red); }
+.hm-slot.is-progress .hm-slot-title,
+.hm-slot.is-next .hm-slot-title { color: var(--navy); }
+.hm-slot-btn {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.hm-slot-btn.is-next { background: var(--red); }
+.hm-slot-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* 끝낸 칸: 입국 도장 */
+.hm-slot.is-done { border-color: transparent; }
+.hm-stampmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px 7px;
+  border: 3px double var(--ink);
+  border-radius: 12px;
+  color: var(--ink);
+  transform: rotate(var(--tilt));
+  opacity: 0.9;
+  animation: hm-stamp-in 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+.hm-stampmark-top { font-size: 9.5px; font-weight: 900; letter-spacing: 0.16em; }
+.hm-stampmark-title { font-size: 15px; font-weight: 900; }
+.hm-stampmark-date { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; }
+@keyframes hm-stamp-in {
+  from { opacity: 0; transform: rotate(var(--tilt)) scale(1.8); }
+  to { opacity: 0.9; transform: rotate(var(--tilt)) scale(1); }
+}
+.hm-slot-again {
+  padding: 2px 6px;
+  border: none;
+  background: none;
+  color: var(--navy-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.hm-slot-again:disabled { opacity: 0.45; cursor: default; }
+
+/* 마지막 칸: 그날 완주 도장 */
+.hm-slot--day { border-color: #e3d7c2; background: #fffcf6; }
+.hm-slot-daywait { font-size: 12px; font-weight: 800; line-height: 1.5; color: #c4b28f; }
+.hm-slot--day.is-done { border-color: transparent; background: none; }
+.hm-daystamp {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  aspect-ratio: 1;
+  border: 4px solid var(--red);
+  border-radius: 50%;
+  color: var(--red);
+  transform: rotate(-12deg);
+  box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 5px var(--red);
+  animation: hm-stamp-in 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  --tilt: -12deg;
+}
+.hm-daystamp span { font-size: 11px; font-weight: 900; letter-spacing: 0.12em; margin-top: 14px; }
+.hm-daystamp b { font-size: 20px; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 14px; }
+
+/* 에피소드가 아직 없는 날 */
+.hm-slots-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px dashed #cfd8e6;
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--gray);
+}
+.hm-slots-empty span { font-size: 26px; color: #b9c6db; }
+
+/* 잠긴 면: 흐리게 */
+.hm-pass.is-locked .hm-pass-day,
+.hm-pass.is-locked .hm-slots,
+.hm-pass.is-locked .hm-slots-empty { opacity: 0.4; }
+
+/* 여권 맨 아래 기계 판독 줄 */
+.hm-mrz {
+  display: flex;
+  flex-direction: column;
+  margin-top: clamp(8px, 1.6dvh, 14px);
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: clamp(10px, 2.9vw, 12.5px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #b3bccb;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-pass { transition: none; transform: none; opacity: 1; }
+  .hm-stampmark, .hm-daystamp { animation: none; }
+  .hm-pages { scroll-behavior: auto; }
+}

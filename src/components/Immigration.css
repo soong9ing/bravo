@@ -1,0 +1,549 @@
+/* ───────── BraVo · Chapter 1 · Step 1 · 입국 심사 ───────── */
+.im-ready,
+.im-room {
+  --navy: #0b1d3a;
+  --orange: #e8553d;
+  --muted: #6b7486;
+  --line: #e3e7ee;
+  --green: #22a35a;
+  font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: var(--navy);
+  box-sizing: border-box;
+}
+.im-ready *, .im-room * { box-sizing: border-box; }
+.im-ready p, .im-room p { margin: 0; }
+.im-ready button:disabled, .im-room button:disabled { cursor: default; }
+
+/* 나가기 (오른쪽 위, 반투명) */
+.im-exit {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(11, 29, 58, 0.45);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.im-exit:hover { background: rgba(11, 29, 58, 0.65); }
+
+/* 동그란 작은 버튼 (🔊 🎤) */
+.im-round {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #eef2f8;
+  font-size: 17px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+.im-round:active { transform: scale(0.94); }
+.im-round:disabled { opacity: 0.4; }
+.im-round.is-listening { background: var(--orange); box-shadow: 0 0 0 4px rgba(232, 85, 61, 0.25); animation: im-pulse 1.2s ease-in-out infinite; }
+.im-round--sm { width: 34px; height: 34px; font-size: 15px; background: #fff; }
+
+/* 음성 미지원 안내 */
+.im-voice-help {
+  margin: 0 0 8px !important;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff4e5;
+  color: #8a5a14;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* ═════════ 1) 준비 단계 ═════════ */
+.im-ready {
+  position: relative;
+  min-height: 100dvh;
+  padding: 48px 20px 32px;
+  background: linear-gradient(180deg, #0b1d3a 0%, #1f4275 100%);
+  color: #fff;
+}
+.im-ready .im-exit { background: rgba(255, 255, 255, 0.15); }
+.im-ready-inner { max-width: 440px; margin: 0 auto; text-align: center; }
+.im-ready-poster {
+  display: block;
+  width: 144px;
+  aspect-ratio: 4 / 3;
+  margin: 0 auto 18px;
+  border-radius: 18px;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+.im-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.3em; opacity: 0.7; }
+.im-title { margin: 6px 0 10px; font-size: 26px; font-weight: 800; }
+.im-situation { font-size: 15px; line-height: 1.6; opacity: 0.88; }
+
+.im-section-label {
+  margin: 28px 0 10px !important;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+.im-phrases { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; text-align: left; }
+.im-phrase {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 12px 14px 16px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 6px 16px rgba(5, 15, 35, 0.18);
+  transition: box-shadow 0.3s;
+}
+.im-phrase.is-said { box-shadow: 0 0 0 2px var(--green), 0 6px 16px rgba(5, 15, 35, 0.18); }
+.im-phrase-text { min-width: 0; }
+.im-phrase-en { font-size: 15px; font-weight: 700; line-height: 1.4; }
+.im-phrase-check {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: 11px;
+  vertical-align: 1px;
+  animation: im-pop 0.35s ease;
+}
+.im-phrase-ko { margin-top: 2px !important; font-size: 12.5px; color: var(--muted); }
+.im-phrase-interim { margin-top: 6px !important; font-size: 13px; color: #9aa1ad; font-style: italic; }
+.im-phrase-retry { margin-top: 6px !important; font-size: 12.5px; color: #3b6aa3; }
+.im-phrase-actions { display: flex; gap: 6px; }
+
+/* 할 말 메모 */
+.im-memo { display: block; text-align: left; }
+.im-memo-guide { display: block; margin-bottom: 8px; font-size: 13px; line-height: 1.5; opacity: 0.85; }
+.im-memo textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-size: 16px; /* 16px 미만이면 아이폰에서 화면이 확대돼요 */
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+.im-memo textarea:focus { box-shadow: 0 0 0 3px rgba(232, 85, 61, 0.45); }
+
+.im-start {
+  width: 100%;
+  margin-top: 28px;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--orange);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(5, 15, 35, 0.3);
+}
+.im-start:active { transform: scale(0.98); }
+.im-start--ghost {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+.im-resume { padding-top: 12vh; }
+.im-resume .im-situation { margin-bottom: 8px !important; font-size: 17px; font-weight: 700; opacity: 1; }
+
+/* ═════════ 2) 대화 단계 ═════════ */
+.im-room {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 560px;
+  margin: 0 auto;
+  background: #f3f5f9;
+  overflow: hidden;
+}
+
+/* 영상: 화면 너비 100%, 4:3 */
+.im-stage { position: relative; flex-shrink: 0; }
+.im-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 38dvh; /* 폰: 영상이 화면을 다 차지하지 않게 → 대화가 넉넉히 보여요 */
+  overflow: hidden;
+  background: var(--navy);
+}
+
+/* 영상 아래 자막: 심사관이 지금 한 말 */
+.im-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 22px 16px 10px;
+  background: linear-gradient(180deg, rgba(5, 12, 28, 0) 0%, rgba(5, 12, 28, 0.78) 45%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+.im-video-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 80ms linear;
+}
+.im-video-layer.is-active { opacity: 1; }
+/* 대기 영상은 맨 아래에 항상 깔아 둬서, 바뀌는 순간에도 빈 화면이 안 보여요 */
+.im-video-layer:first-child { opacity: 1; }
+
+/* 통과 미션 체크리스트 */
+.im-missions {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.im-missions ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.im-mission {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 4px;
+  border-radius: 999px;
+  background: #eef1f6;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s;
+}
+.im-mission-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 800;
+}
+.im-mission.is-current { background: #e4ecf8; color: var(--navy); box-shadow: inset 0 0 0 1.5px var(--navy); }
+.im-mission.is-pass { background: #e2f5e9; color: #1d7a45; }
+.im-mission.is-pass .im-mission-icon { background: var(--green); color: #fff; animation: im-pop 0.35s ease; }
+/* 세 번 시도 후 넘어간 질문: 실패 표시 없이 차분한 '완료' */
+.im-mission.is-done { background: #e8edf5; color: #4a5a78; }
+.im-mission.is-done .im-mission-icon { background: #8a9bb8; color: #fff; }
+@keyframes im-pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+/* 대화 말풍선 */
+.im-chat {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.im-msg { max-width: 84%; animation: im-msg-in 0.25s ease both; }
+.im-msg--officer { align-self: flex-start; }
+.im-msg--me { align-self: flex-end; }
+.im-bubble { padding: 11px 15px; font-size: 17px; line-height: 1.5; word-break: break-word; }
+.im-msg--officer .im-bubble { background: #e3eefb; color: var(--navy); border-radius: 16px 16px 16px 4px; }
+.im-msg--me .im-bubble { background: var(--navy); color: #fff; border-radius: 16px 16px 4px 16px; }
+@keyframes im-msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* 예상 못 한 질문 */
+.im-surprise { margin-bottom: 5px; }
+.im-surprise-title { color: var(--orange); font-size: 12.5px; font-weight: 800; }
+.im-surprise-calm { font-size: 12px; color: var(--muted); }
+
+.im-checking { align-self: flex-start; font-size: 13px; color: var(--muted); animation: im-blink 1s ease-in-out infinite alternate; }
+@keyframes im-blink { from { opacity: 0.45; } to { opacity: 1; } }
+
+/* 레벨별 도움 카드 (repeat 모범 문장 / choice 선택지) */
+.im-help-card {
+  padding: 10px 12px 12px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(11, 29, 58, 0.06);
+  animation: im-msg-in 0.3s ease both;
+}
+.im-help-label { margin-bottom: 6px !important; font-size: 11.5px; font-weight: 800; color: var(--muted); }
+.im-help-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 8px 8px 12px;
+  border-radius: 10px;
+  background: #f4f7fb;
+}
+.im-help-sentence { font-size: 16px; font-weight: 700; line-height: 1.4; }
+.im-choices { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+
+/* 힌트 메모 (연한 파랑) */
+.im-hint {
+  padding: 10px 13px;
+  border: 1px dashed #9cc3ec;
+  border-radius: 12px;
+  background: #eaf3fd;
+  color: #1f4275;
+  font-size: 15.5px;
+  line-height: 1.45;
+  animation: im-msg-in 0.3s ease both;
+}
+.im-hint-label { display: block; margin-bottom: 2px; font-size: 11px; font-weight: 800; color: #3b6aa3; }
+
+/* 하단 조작부 */
+.im-controls {
+  flex-shrink: 0;
+  padding: 6px 14px calc(10px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.im-live {
+  min-height: 20px;
+  margin-bottom: 6px !important;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.im-live.is-listening { color: #9aa1ad; font-size: 16px; } /* 인식 중인 글자: 회색 */
+
+/* 말한 뒤 확인: 이렇게 들렸어요 → 고쳐서 보내기 / 다시 말하기 */
+.im-draft { padding: 2px 0 4px; animation: im-msg-in 0.25s ease both; }
+.im-draft-label { display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.im-draft-text {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #c9d6ea;
+  border-radius: 14px;
+  background: #f7f9fd;
+  color: var(--navy);
+  font: inherit;
+  font-size: 17px; /* 16px 이상이어야 아이폰에서 화면이 확대되지 않아요 */
+  line-height: 1.45;
+  resize: none;
+  outline: none;
+}
+.im-draft-text:focus { border-color: var(--navy); background: #fff; }
+.im-draft-actions { display: flex; gap: 8px; margin-top: 8px; }
+.im-draft-again,
+.im-draft-send {
+  flex: 1;
+  padding: 13px 10px;
+  border: none;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.im-draft-again { background: #eef2f8; color: var(--navy); }
+.im-draft-send { background: var(--navy); color: #fff; }
+.im-draft-again:disabled,
+.im-draft-send:disabled { opacity: 0.4; }
+
+.im-form { display: flex; gap: 8px; margin-bottom: 8px; }
+.im-input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #f7f8fb;
+  color: var(--navy);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+}
+.im-input:focus { border-color: var(--navy); background: #fff; }
+.im-send {
+  flex-shrink: 0;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.im-send:disabled { opacity: 0.35; }
+
+/* 왼쪽(도움 받기) · 가운데(마이크) · 오른쪽(다시 말하기·키보드) — 마이크는 항상 가운데 */
+.im-buttons { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 6px; }
+.im-buttons > :first-child { justify-self: start; }
+.im-side-group { justify-self: end; display: flex; gap: 2px; }
+.im-side-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 64px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+.im-side-btn span { font-size: 11px; font-weight: 600; }
+.im-side-btn:disabled { opacity: 0.35; }
+.im-side-btn.is-on { background: #eef2f8; color: var(--navy); }
+.im-side-btn--empty { visibility: hidden; }
+
+/* 큰 원형 마이크 */
+.im-mic {
+  width: 72px;
+  height: 72px;
+  border: none;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(11, 29, 58, 0.3);
+  transition: transform 0.1s, background 0.2s, opacity 0.2s;
+}
+.im-mic:active { transform: scale(0.95); }
+.im-mic:disabled { opacity: 0.3; box-shadow: none; }
+.im-mic.is-listening { background: var(--orange); font-size: 22px; animation: im-pulse 1.2s ease-in-out infinite; }
+.im-mic-placeholder { width: 72px; }
+@keyframes im-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 85, 61, 0.45); }
+  50% { box-shadow: 0 0 0 12px rgba(232, 85, 61, 0); }
+}
+
+.im-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.im-memo-toggle {
+  padding: 3px 4px;
+  border: none;
+  background: none;
+  color: #3b6aa3;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.im-memo-view {
+  margin-top: 6px !important;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff8e8;
+  color: #5c4a1e;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.im-rate { display: flex; padding: 2px; border-radius: 999px; background: #eef1f6; }
+.im-rate button {
+  padding: 3px 10px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.im-rate button.is-on { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(11, 29, 58, 0.12); }
+
+/* ═════════ 3) 통과 ═════════ */
+/* APPROVED 도장: 영상 위에 쾅 */
+.im-stamp {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 3;
+  padding: 8px 18px 10px;
+  border: 4px solid #d42f2a;
+  border-radius: 10px;
+  color: #d42f2a;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(212, 47, 42, 0.35);
+  transform: translate(-50%, -50%) rotate(-12deg);
+  animation: im-stamp 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  pointer-events: none;
+}
+.im-stamp strong { display: block; font-size: clamp(28px, 9vw, 46px); font-weight: 900; letter-spacing: 0.06em; line-height: 1.05; }
+.im-stamp small { display: block; margin-top: 4px; font-size: 11px; font-weight: 800; letter-spacing: 0.22em; }
+@keyframes im-stamp {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-12deg) scale(2.4); }
+  60% { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scale(0.92); }
+  100% { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scale(1); }
+}
+
+.im-passed {
+  flex-shrink: 0;
+  padding: 12px 14px calc(16px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.im-pass-card {
+  padding: 16px;
+  border: 1px solid #f6cdc2;
+  border-radius: 16px;
+  background: #fff6f3;
+  text-align: center;
+  animation: im-msg-in 0.4s ease both;
+}
+.im-pass-title { font-size: 18px; font-weight: 800; }
+.im-next {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--orange);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* "동작 줄이기" 설정: 도장은 애니메이션 없이 바로, 다른 움직임도 최소로 */
+@media (prefers-reduced-motion: reduce) {
+  .im-stamp,
+  .im-msg,
+  .im-pass-card,
+  .im-help-card,
+  .im-hint,
+  .im-mission-icon,
+  .im-phrase-check,
+  .im-checking,
+  .im-mic,
+  .im-round { animation: none !important; }
+  .im-video-layer { transition: none; }
+}
