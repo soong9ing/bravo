@@ -334,6 +334,8 @@
   color: var(--muted);
 }
 .im-live.is-listening { color: #9aa1ad; font-size: 16px; } /* 인식 중인 글자: 회색 */
+.im-live-hint { display: block; font-size: 12.5px; line-height: 1.5; } /* 듣고 있어요… 안내: 살짝 작게 */
+.im-live-hint small { font-size: 11.5px; }
 
 /* 말한 뒤 확인: 이렇게 들렸어요 → 고쳐서 보내기 / 다시 말하기 */
 .im-draft { padding: 2px 0 4px; animation: im-msg-in 0.25s ease both; }

@@ -51,7 +51,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
   const [rate, setRate] = useState(1); // 말하기 속도: 1 또는 0.8
 
   const [officer, setOfficer] = useState('idle'); // 심사관 영상: idle | talk | check | pass | smile
-  const [caption, setCaption] = useState(''); // 영상 아래 자막 (심사관이 지금 한 말)
   const [draft, setDraft] = useState(null); // 말한 뒤 보내기 전 확인: { text, original, focus }
   const [busy, setBusy] = useState(null); // null | 'speaking' | 'checking' | 'passing'
   const [messages, setMessages] = useState([]); // 대화 말풍선 (= 자막)
@@ -180,11 +179,10 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
   const addMessage = (msg) => setMessages((list) => [...list, { id: ++msgId.current, ...msg }]);
   const isStale = (run) => runRef.current !== run;
 
-  // 심사관이 말하기: 말풍선 + 영상 아래 자막 + 음성 + 말하는 영상 → 끝나면 쉬는 영상
+  // 심사관이 말하기: 말풍선(대화 창) + 음성 + 말하는 영상 → 끝나면 쉬는 영상
   // video: 말하는 동안 영상 (기본 talk, 마지막 인사는 smile) / rest: 다 말한 뒤 영상 (기본 idle)
   async function officerSay(run, line, extra = {}, { video = 'talk', rest = 'idle' } = {}) {
     addMessage({ from: 'officer', text: line, ...extra });
-    setCaption(line);
     setOfficer(video);
     setBusy('speaking');
     await speak(line, { rate: rateRef.current });
@@ -209,7 +207,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
     const run = ++runRef.current;
     record.current.talkStartedAt ??= Date.now();
     setMessages([]);
-    setCaption('');
     setDraft(null);
     setStamped(false);
     setFinished(false);
@@ -267,7 +264,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
     memoRef.current = '';
     setMissions({});
     setMessages([]);
-    setCaption('');
     setDraft(null);
     setCoaching(null);
     setAchievement(null);
@@ -393,7 +389,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
       recordHints(turn, shown);
       await officerSay(run, scene.repeatLine);
       if (isStale(run)) return;
-      setCaption(turn.question); // 자막은 다시 지금 질문으로
     }
   }
 
@@ -407,9 +402,8 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
         setNotice(UNCLEAR_MSG); // 시도 횟수에 넣지 않아요
         return;
       }
-      // 바로 보내지 않고 "이렇게 들렸어요"로 보여줘요 → 고쳐서 보내거나, 다시 말하기
-      const heard = result.text.trim();
-      setDraft({ text: heard, original: heard });
+      // 정지 버튼 = 바로 보내기 (다시 말하기·키보드로 고치기는 정지 전에만 할 수 있어요)
+      submitAnswer(result.text.trim());
       return;
     }
     if (busy) return;
@@ -565,11 +559,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
     <div className="im-room">
       <div className="im-stage">
         <OfficerVideo media={scene.media} state={officer}>
-          {caption && (phase === 'talk' || phase === 'done') && (
-            <p className="im-caption" aria-hidden="true">
-              {caption}
-            </p>
-          )}
           {stamped && (
             <div className="im-stamp" role="img" aria-label="입국 승인 도장">
               <strong>APPROVED</strong>
@@ -580,27 +569,6 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
         <button type="button" className="im-exit" onClick={exit}>
           나가기
         </button>
-      </div>
-
-      {/* 통과 미션 체크리스트 */}
-      <div className="im-missions">
-        <ul>
-          {turns.map((t, i) => {
-            const status = missions[t.id];
-            const isCurrent = phase === 'talk' && i === turnIndex && !status;
-            return (
-              <li
-                key={t.id}
-                className={`im-mission${status ? ` is-${status}` : ''}${isCurrent ? ' is-current' : ''}`}
-              >
-                <span className="im-mission-icon" aria-hidden="true">
-                  {status ? '✓' : i + 1}
-                </span>
-                {t.missionLabel}
-              </li>
-            );
-          })}
-        </ul>
       </div>
 
       {/* 대화 (심사관 말풍선 = 자막) */}
@@ -671,7 +639,13 @@ export default function Immigration({ scene = defaultScene, startMode = 'auto', 
           {/* 인식 중인 글자 / 안내 */}
           <p className={`im-live${mic.listening ? ' is-listening' : ''}`} aria-live="polite">
             {mic.listening
-              ? mic.interim || '듣고 있어요… 다 말했으면 마이크를 다시 눌러 주세요 (키보드를 누르면 바로 고칠 수 있어요)'
+              ? mic.interim || (
+                  <span className="im-live-hint">
+                    듣고 있어요… 다 말했으면 마이크를 다시 눌러 주세요
+                    <br />
+                    <small>(키보드를 누르면 바로 고칠 수 있어요)</small>
+                  </span>
+                )
               : notice ||
                 (busy === 'speaking'
                   ? '심사관의 말을 들어 보세요'
