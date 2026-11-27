@@ -1,0 +1,245 @@
+/* ───────── BraVo · Prologue 탑승권 가입 화면 ───────── */
+.bp-screen {
+  --sky-top: #0b1d3a;
+  --sky-mid: #1f4275;
+  --sky-low: #f2a971;
+  --paper: #ffffff;
+  --ink: #1b2233;
+  --muted: #8b93a1;
+  --line: #dde1e7;
+  --accent: #e8553d;
+
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background:
+    radial-gradient(ellipse 60% 8% at 20% 78%, rgba(255, 255, 255, 0.35), transparent 70%),
+    radial-gradient(ellipse 50% 6% at 85% 88%, rgba(255, 255, 255, 0.3), transparent 70%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
+  font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.bp-screen *, .bp-screen *::before, .bp-screen *::after { box-sizing: border-box; }
+
+/* 인트로 문구 */
+.bp-intro { text-align: center; color: #fff; margin-bottom: 20px; }
+.bp-intro-eyebrow { margin: 0; font-size: 11px; letter-spacing: 0.3em; opacity: 0.7; }
+.bp-intro h1 { margin: 6px 0 4px; font-size: 22px; font-weight: 800; }
+.bp-intro-sub { margin: 0; font-size: 14px; opacity: 0.85; }
+
+/* 티켓 본체 */
+.bp-ticket {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  /* 그림자는 drop-shadow로 — 홈이 뚫린 모양까지 따라 그려져요 */
+  filter: drop-shadow(0 20px 40px rgba(5, 15, 35, 0.45));
+  animation: bp-slide-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes bp-slide-in {
+  from { transform: translateY(40px) rotate(-2deg); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.bp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 20px 20px 0 0;
+}
+.bp-brand { font-weight: 800; letter-spacing: 0.06em; font-size: 15px; }
+.bp-class { font-size: 10px; letter-spacing: 0.2em; opacity: 0.9; }
+
+/* 출발 → 도착 */
+.bp-route { display: flex; align-items: center; padding: 18px 20px 8px; }
+.bp-city { display: flex; flex-direction: column; }
+.bp-city--right { text-align: right; }
+.bp-code { font-size: 34px; font-weight: 900; letter-spacing: 0.02em; line-height: 1; }
+.bp-cityname { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); margin-top: 4px; }
+.bp-flightline {
+  flex: 1;
+  position: relative;
+  height: 2px;
+  margin: 0 12px 14px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 11px);
+}
+.bp-plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--paper);
+  padding: 0 6px;
+  color: var(--accent);
+  font-size: 18px;
+}
+
+/* 항공편 정보 */
+.bp-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin: 0;
+  padding: 6px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.bp-meta dt { font-size: 9px; letter-spacing: 0.14em; color: var(--muted); }
+.bp-meta dd { margin: 2px 0 0; font-size: 14px; font-weight: 800; }
+
+/* 입력 필드 */
+.bp-body { padding: 16px 20px 18px; }
+.bp-field { margin-bottom: 16px; }
+.bp-field label, .bp-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.bp-field label span, .bp-label span { letter-spacing: 0; font-weight: 500; margin-left: 4px; }
+.bp-field input {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px dashed var(--line);
+  background: transparent;
+  padding: 6px 0 7px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+.bp-field input::placeholder { color: #b8bfca; font-weight: 500; }
+.bp-field input:focus { border-bottom-style: solid; border-bottom-color: var(--accent); }
+.bp-field input[aria-invalid='true'] { border-bottom-color: #d23b2a; }
+.bp-field input:disabled { color: var(--ink); opacity: 1; -webkit-text-fill-color: var(--ink); }
+
+.bp-pw { position: relative; }
+.bp-pw input { padding-right: 56px; }
+.bp-pw-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.bp-error { margin: 5px 0 0; font-size: 12px; color: #d23b2a; }
+
+/* 위·아래 조각: 맞닿는 모서리에 반원 홈을 실제로 뚫어요 */
+.bp-main, .bp-stub { background: var(--paper); }
+.bp-main {
+  border-radius: 20px 20px 0 0;
+  -webkit-mask:
+    radial-gradient(circle 12px at 0 100%, transparent 11.5px, #000 12px) left / 51% 100% no-repeat,
+    radial-gradient(circle 12px at 100% 100%, transparent 11.5px, #000 12px) right / 51% 100% no-repeat;
+          mask:
+    radial-gradient(circle 12px at 0 100%, transparent 11.5px, #000 12px) left / 51% 100% no-repeat,
+    radial-gradient(circle 12px at 100% 100%, transparent 11.5px, #000 12px) right / 51% 100% no-repeat;
+}
+
+/* 스텁 */
+.bp-stub {
+  position: relative;
+  padding: 18px 20px 20px;
+  border-radius: 0 0 20px 20px;
+  -webkit-mask:
+    radial-gradient(circle 12px at 0 0, transparent 11.5px, #000 12px) left / 51% 100% no-repeat,
+    radial-gradient(circle 12px at 100% 0, transparent 11.5px, #000 12px) right / 51% 100% no-repeat;
+          mask:
+    radial-gradient(circle 12px at 0 0, transparent 11.5px, #000 12px) left / 51% 100% no-repeat,
+    radial-gradient(circle 12px at 100% 0, transparent 11.5px, #000 12px) right / 51% 100% no-repeat;
+}
+.bp-stub::before { /* 절취선 */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  border-top: 2px dashed var(--line);
+}
+.bp-stub-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; gap: 12px; }
+.bp-stub-label { display: block; font-size: 9px; letter-spacing: 0.14em; color: var(--muted); }
+.bp-stub-name { display: block; font-size: 16px; font-weight: 900; letter-spacing: 0.04em; word-break: break-all; }
+.bp-barcode {
+  flex-shrink: 0;
+  width: 110px;
+  height: 34px;
+  background: repeating-linear-gradient(90deg,
+    var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px,
+    var(--ink) 8px 11px, transparent 11px 12px, var(--ink) 12px 13px, transparent 13px 16px);
+}
+
+.bp-submit {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: var(--sky-top);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+.bp-submit:active { transform: scale(0.98); }
+.bp-submit:disabled { opacity: 0.6; cursor: wait; }
+.bp-submit--board { background: var(--accent); animation: bp-pulse 1.6s ease-in-out infinite; }
+@keyframes bp-pulse { 50% { box-shadow: 0 0 0 8px rgba(232, 85, 61, 0.18); } }
+
+.bp-error--server { margin: 0 0 10px; text-align: center; }
+.bp-confirm { margin: 0; text-align: center; font-size: 14px; line-height: 1.6; }
+
+.bp-login {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.bp-login u { color: var(--ink); font-weight: 700; }
+
+/* 발급 완료 도장 */
+.bp-stamp {
+  position: absolute;
+  top: 46%;
+  right: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  border: 3px solid var(--accent);
+  border-radius: 10px;
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+  pointer-events: none;
+  animation: bp-stamp 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.bp-stamp small { font-size: 10px; letter-spacing: 0.1em; font-weight: 700; }
+@keyframes bp-stamp {
+  from { transform: rotate(-12deg) scale(2.2); opacity: 0; }
+  to   { transform: rotate(-12deg) scale(1); opacity: 0.85; }
+}
